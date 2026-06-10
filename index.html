@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAKLUMAT GURU ICT PROJEK SEWAAN DAERAH KUANTAN</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        base: '#e2e8f0', // Slate 200
+                    },
+                    boxShadow: {
+                        'skeuo': '12px 12px 24px #b8bec6, -12px -12px 24px #ffffff',
+                        'skeuo-inset': 'inset 6px 6px 12px #b8bec6, inset -6px -6px 12px #ffffff',
+                        'skeuo-btn': '6px 6px 12px #b8bec6, -6px -6px 12px #ffffff',
+                        'skeuo-btn-active': 'inset 6px 6px 12px #b8bec6, inset -6px -6px 12px #ffffff',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #e2e8f0;
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        /* Custom modern scrollbar matching skeuomorphic look */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 12px;
+            height: 12px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #e2e8f0;
+            border-radius: 10px;
+            box-shadow: inset 3px 3px 6px #b8bec6, inset -3px -3px 6px #ffffff;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Hide elements safely */
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body class="min-h-screen text-slate-700 p-4 md:p-8 selection:bg-blue-300">
+
+    <div id="loading-screen" class="fixed inset-0 bg-base z-50 flex items-center justify-center">
+        <div class="p-8 bg-base rounded-3xl shadow-skeuo border border-white/40 flex flex-col items-center gap-4">
+            <div class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+            <p class="text-slate-700 font-bold text-lg">Memuat turun data...</p>
+        </div>
+    </div>
+
+    <div id="error-screen" class="hidden fixed inset-0 bg-base z-50 flex items-center justify-center p-4">
+        <div class="p-8 bg-base rounded-3xl shadow-skeuo border border-white/40 text-center">
+            <p class="text-red-500 font-bold text-xl mb-2">Ralat!</p>
+            <p id="error-message" class="text-slate-700"></p>
+        </div>
+    </div>
+
+    <div id="main-content" class="max-w-7xl mx-auto hidden">
+        
+        <div class="mb-8 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-4">
+                <div class="p-4 bg-base rounded-3xl shadow-skeuo border border-white/40">
+                    <i class="ph ph-squares-four text-3xl text-blue-600"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-extrabold text-slate-800 tracking-tight drop-shadow-sm">
+                        MAKLUMAT GURU ICT
+                    </h1>
+                    <h2 class="text-lg md:text-xl font-medium text-slate-500 tracking-wide">
+                        PROJEK SEWAAN DAERAH KUANTAN
+                    </h2>
+                </div>
+            </div>
+            
+            <button onclick="downloadExcel()" class="px-6 py-4 bg-base rounded-xl shadow-skeuo-btn active:shadow-skeuo-btn-active transition-all duration-200 ease-in-out font-bold flex items-center justify-center gap-2 text-blue-700 w-full md:w-auto group">
+                <i class="ph ph-download-simple text-xl group-hover:-translate-y-1 transition-transform"></i>
+                <span>Muat Turun Excel</span>
+            </button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- SCORECARDS (Kiri, 5 columns) -->
+            <div class="lg:col-span-5 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <!-- Card 1 -->
+                <div class="p-6 bg-base rounded-3xl shadow-skeuo border border-white/40 flex flex-col justify-between relative overflow-hidden">
+                    <div class="flex items-start justify-between mb-4">
+                        <div>
+                            <p class="text-slate-500 text-sm font-bold uppercase tracking-wider mb-1">
+                                Bilangan Sekolah
+                            </p>
+                            <h3 id="score-sekolah" class="text-5xl font-black text-slate-800 tracking-tighter">
+                                0
+                            </h3>
+                        </div>
+                        <div class="p-3 bg-base shadow-skeuo-inset rounded-xl text-blue-600">
+                            <i class="ph ph-buildings text-3xl"></i>
+                        </div>
+                    </div>
+                    <div class="w-full h-2 bg-slate-300 rounded-full mt-2 shadow-inner overflow-hidden">
+                        <div class="h-full bg-blue-500 w-3/4 rounded-full"></div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="p-6 bg-base rounded-3xl shadow-skeuo border border-white/40 flex flex-col justify-between relative overflow-hidden">
+                    <div class="flex items-start justify-between mb-4">
+                        <div>
+                            <p class="text-slate-500 text-sm font-bold uppercase tracking-wider mb-1">
+                                Bil. PTIS Seliaan
+                            </p>
+                            <h3 id="score-ptis" class="text-5xl font-black text-slate-800 tracking-tighter">
+                                0
+                            </h3>
+                        </div>
+                        <div class="p-3 bg-base shadow-skeuo-inset rounded-xl text-emerald-600">
+                            <i class="ph ph-user-check text-3xl"></i>
+                        </div>
+                    </div>
+                    <div class="w-full h-2 bg-slate-300 rounded-full mt-2 shadow-inner overflow-hidden">
+                        <div class="h-full bg-emerald-500 w-1/2 rounded-full"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FILTERS PANEL (Kanan, 7 columns) -->
+            <div class="lg:col-span-7 p-6 bg-base rounded-3xl shadow-skeuo border border-white/40">
+                <div class="flex items-center gap-2 mb-6">
+                    <i class="ph ph-funnel text-xl text-slate-500"></i>
+                    <h3 class="text-slate-700 font-bold text-lg">Panel Penapis Data</h3>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Filter PTIS -->
+                    <div class="flex flex-col gap-2">
+                        <label class="text-slate-500 text-xs font-bold uppercase ml-2 flex items-center gap-2">
+                            <i class="ph ph-users"></i> Nama PTIS Seliaan
+                        </label>
+                        <div class="relative bg-base shadow-skeuo-inset rounded-xl p-1">
+                            <select id="filter-ptis" onchange="handleFilterChange('ptis', this.value)" class="w-full bg-transparent p-2 text-slate-700 font-medium outline-none cursor-pointer appearance-none">
+                                <option value="Semua">-- Semua PTIS --</option>
+                            </select>
+                            <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">▼</div>
+                        </div>
+                    </div>
+
+                    <!-- Filter PDT -->
+                    <div class="flex flex-col gap-2">
+                        <label class="text-slate-500 text-xs font-bold uppercase ml-2 flex items-center gap-2">
+                            <i class="ph ph-cpu"></i> Kategori PDT
+                        </label>
+                        <div class="relative bg-base shadow-skeuo-inset rounded-xl p-1">
+                            <select id="filter-pdt" onchange="handleFilterChange('pdt', this.value)" class="w-full bg-transparent p-2 text-slate-700 font-medium outline-none cursor-pointer appearance-none">
+                                <option value="Semua">-- Semua PDT --</option>
+                            </select>
+                            <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">▼</div>
+                        </div>
+                    </div>
+
+                    <!-- Filter Peranti -->
+                    <div class="flex flex-col gap-2">
+                        <label class="text-slate-500 text-xs font-bold uppercase ml-2 flex items-center gap-2">
+                            <i class="ph ph-devices"></i> Peranti Guru
+                        </label>
+                        <div class="relative bg-base shadow-skeuo-inset rounded-xl p-1">
+                            <select id="filter-peranti" onchange="handleFilterChange('peranti', this.value)" class="w-full bg-transparent p-2 text-slate-700 font-medium outline-none cursor-pointer appearance-none">
+                                <option value="Semua">-- Semua Peranti --</option>
+                            </select>
+                            <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">▼</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-12 p-4 md:p-6 bg-base rounded-3xl shadow-skeuo border border-white/40 flex flex-col mt-2">
+                <div class="flex justify-between items-center mb-4 px-2">
+                    <h3 class="text-slate-700 font-bold text-lg">Senarai Maklumat Terperinci</h3>
+                    <span id="record-count" class="bg-base shadow-skeuo-inset rounded-xl px-4 py-1 text-sm font-bold text-blue-600">
+                        0 Rekod
+                    </span>
+                </div>
+
+                <div class="w-full overflow-x-auto bg-base shadow-skeuo-inset rounded-xl p-2 h-[500px] overflow-y-auto custom-scrollbar relative">
+                    <table class="w-full text-left border-collapse whitespace-nowrap">
+                        <thead id="table-head" class="sticky top-0 bg-[#e2e8f0]/95 backdrop-blur-md z-10 shadow-sm">
+                            <!-- Table headers will be injected here -->
+                        </thead>
+                        <tbody id="table-body">
+                            <!-- Table rows will be injected here -->
+                        </tbody>
+                    </table>
+                    
+                    <!-- Empty State -->
+                    <div id="empty-state" class="hidden flex-col items-center justify-center h-full text-slate-400 py-12">
+                        <i class="ph ph-squares-four text-5xl mb-4 opacity-50"></i>
+                        <p class="font-medium text-lg">Tiada data dijumpai untuk penapis ini.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // State Variables
+        let allData = [];
+        let filteredData = [];
+        let dataKeys = { ptisKey: '', pdtKey: '', perantiKey: '', sekolahKey: '' };
+        let activeFilters = {
+            ptis: 'Semua',
+            pdt: 'Semua',
+            peranti: 'Semua'
+        };
+
+        const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSYuv1LtU-DM8JnlMHXKxLGWFmSgw4wFG4LCyr0VRpFwAY6Bcu22uL0oYiFddc3s4N8UWQfgXdFFZUT/pub?output=csv';
+
+        // Initialize App
+        window.onload = () => {
+            fetchData();
+        };
+
+        async function fetchData() {
+            try {
+                const response = await fetch(SHEET_URL);
+                if (!response.ok) throw new Error("Gagal memuat turun data dari Google Sheets.");
+                const csvText = await response.text();
+                
+                allData = parseCSV(csvText);
+                
+                if (allData.length > 0) {
+                    identifyKeys(allData[0]);
+                    populateFilters();
+                    applyFilters(); // Initial render
+                    
+                    document.getElementById('loading-screen').classList.add('hidden');
+                    document.getElementById('main-content').classList.remove('hidden');
+                } else {
+                    throw new Error("Tiada data dijumpai dalam fail CSV.");
+                }
+
+            } catch (err) {
+                document.getElementById('loading-screen').classList.add('hidden');
+                document.getElementById('error-screen').classList.remove('hidden');
+                document.getElementById('error-message').innerText = err.message;
+            }
+        }
+
+        // Custom robust CSV Parser
+        function parseCSV(str) {
+            const rows = [];
+            let currentRow = [];
+            let currentValue = "";
+            let insideQuotes = false;
+
+            for (let i = 0; i < str.length; i++) {
+                const char = str[i];
+                const nextChar = str[i + 1];
+
+                if (char === '"') {
+                    if (insideQuotes && nextChar === '"') {
+                        currentValue += '"';
+                        i++; 
+                    } else {
+                        insideQuotes = !insideQuotes;
+                    }
+                } else if (char === ',' && !insideQuotes) {
+                    currentRow.push(currentValue);
+                    currentValue = "";
+                } else if (char === '\n' && !insideQuotes) {
+                    currentRow.push(currentValue);
+                    rows.push(currentRow);
+                    currentRow = [];
+                    currentValue = "";
+                } else if (char !== '\r') {
+                    currentValue += char;
+                }
+            }
+            if (currentRow.length > 0 || currentValue !== "") {
+                currentRow.push(currentValue);
+                rows.push(currentRow);
+            }
+
+            if (rows.length < 2) return [];
+
+            const rawHeaders = rows[0];
+            const headers = [];
+            
+            // Handle duplicate headers
+            rawHeaders.forEach(h => {
+                let headerName = h.trim();
+                let count = 1;
+                while (headers.includes(headerName)) {
+                    headerName = `${h.trim()} (${count})`;
+                    count++;
+                }
+                headers.push(headerName);
+            });
+
+            return rows.slice(1).map(row => {
+                return headers.reduce((obj, header, index) => {
+                    obj[header] = row[index] ? row[index].trim() : '';
+                    return obj;
+                }, {});
+            }).filter(row => Object.values(row).some(v => v !== '')); // Remove completely empty rows
+        }
+
+        // Dynamically find exact header names
+        function identifyKeys(firstRow) {
+            const headers = Object.keys(firstRow);
+            dataKeys.ptisKey = headers.find(h => h.toUpperCase().includes('PTIS SELIAAN')) || 'PTIS SELIAAN';
+            dataKeys.pdtKey = headers.find(h => h.toUpperCase() === 'PDT') || 'PDT';
+            dataKeys.perantiKey = headers.find(h => h.toUpperCase().includes('PERANTI GURU')) || 'PERANTI GURU';
+            dataKeys.sekolahKey = headers.find(h => h.toUpperCase().includes('KOD SEKOLAH')) || headers[2] || 'KOD SEKOLAH';
+        }
+
+        function populateFilters() {
+            const ptisSet = new Set();
+            const pdtSet = new Set();
+            const perantiSet = new Set();
+
+            allData.forEach(item => {
+                if (item[dataKeys.ptisKey]) ptisSet.add(item[dataKeys.ptisKey]);
+                if (item[dataKeys.pdtKey]) pdtSet.add(item[dataKeys.pdtKey]);
+                if (item[dataKeys.perantiKey]) perantiSet.add(item[dataKeys.perantiKey]);
+            });
+
+            const renderOptions = (selectId, dataSet) => {
+                const select = document.getElementById(selectId);
+                const sortedArray = Array.from(dataSet).sort();
+                sortedArray.forEach(val => {
+                    const option = document.createElement('option');
+                    option.value = val;
+                    option.innerText = val;
+                    select.appendChild(option);
+                });
+            };
+
+            renderOptions('filter-ptis', ptisSet);
+            renderOptions('filter-pdt', pdtSet);
+            renderOptions('filter-peranti', perantiSet);
+        }
+
+        window.handleFilterChange = function(key, value) {
+            activeFilters[key] = value;
+            applyFilters();
+        };
+
+        function applyFilters() {
+            filteredData = allData.filter(item => {
+                const matchPtis = activeFilters.ptis === 'Semua' || item[dataKeys.ptisKey] === activeFilters.ptis;
+                const matchPdt = activeFilters.pdt === 'Semua' || item[dataKeys.pdtKey] === activeFilters.pdt;
+                const matchPeranti = activeFilters.peranti === 'Semua' || item[dataKeys.perantiKey] === activeFilters.peranti;
+                return matchPtis && matchPdt && matchPeranti;
+            });
+
+            updateScorecards();
+            renderTable();
+        }
+
+        function updateScorecards() {
+            document.getElementById('record-count').innerText = `${filteredData.length} Rekod`;
+
+            if (filteredData.length === 0) {
+                document.getElementById('score-sekolah').innerText = '0';
+                document.getElementById('score-ptis').innerText = '0';
+                return;
+            }
+
+            const unikSekolah = new Set();
+            const unikPtis = new Set();
+
+            filteredData.forEach(d => {
+                if (d[dataKeys.sekolahKey]) unikSekolah.add(d[dataKeys.sekolahKey]);
+                if (d[dataKeys.ptisKey]) unikPtis.add(d[dataKeys.ptisKey]);
+            });
+
+            document.getElementById('score-sekolah').innerText = unikSekolah.size;
+            document.getElementById('score-ptis').innerText = unikPtis.size;
+        }
+
+        function renderTable() {
+            const tableHead = document.getElementById('table-head');
+            const tableBody = document.getElementById('table-body');
+            const emptyState = document.getElementById('empty-state');
+
+            tableHead.innerHTML = '';
+            tableBody.innerHTML = '';
+
+            if (filteredData.length === 0) {
+                emptyState.classList.remove('hidden');
+                emptyState.classList.add('flex');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            emptyState.classList.remove('flex');
+
+            // Render Headers
+            const headers = Object.keys(filteredData[0]);
+            let theadHtml = '<tr>';
+            headers.forEach(header => {
+                if (header.toUpperCase() === 'TIMESTAMP') return; // Hide Timestamp
+                theadHtml += `<th class="p-4 text-xs font-extrabold text-slate-600 uppercase tracking-wider border-b border-slate-300">${header}</th>`;
+            });
+            theadHtml += '</tr>';
+            tableHead.innerHTML = theadHtml;
+
+            // Render Body
+            let tbodyHtml = '';
+            filteredData.forEach(row => {
+                tbodyHtml += '<tr class="hover:bg-white/30 transition-colors border-b border-slate-300/50 last:border-0">';
+                headers.forEach(key => {
+                    if (key.toUpperCase() === 'TIMESTAMP') return;
+                    tbodyHtml += `<td class="p-4 text-sm text-slate-700">${row[key] || '-'}</td>`;
+                });
+                tbodyHtml += '</tr>';
+            });
+            tableBody.innerHTML = tbodyHtml;
+        }
+
+        window.downloadExcel = function() {
+            if (filteredData.length === 0) return;
+            
+            const headers = Object.keys(filteredData[0]);
+            
+            // Map rows and properly escape strings containing commas or quotes
+            const csvContent = [
+                headers.join(','),
+                ...filteredData.map(row => 
+                    headers.map(fieldName => {
+                        let value = row[fieldName] || '';
+                        return `"${String(value).replace(/"/g, '""')}"`;
+                    }).join(',')
+                )
+            ].join('\n');
+
+            // Add BOM for UTF-8 for Excel to read characters correctly
+            const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", "Maklumat_Guru_ICT_Kuantan.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        };
+    </script>
+</body>
+</html>
